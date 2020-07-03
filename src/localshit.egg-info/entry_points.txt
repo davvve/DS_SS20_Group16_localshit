@@ -1,0 +1,5 @@
+[console_scripts]
+client = localshit.client:main
+frontend = localshit.frontend:main
+localshit = localshit.__main__:main
+

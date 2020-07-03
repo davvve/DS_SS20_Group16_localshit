@@ -1,0 +1,158 @@
+<html>
+<head>
+  <title>Local's Hit</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+
+  <script type="text/javascript">
+
+    var ws;
+    var isConnected = false;
+    var counter = 0
+
+    var HttpClient = function() {
+        this.get = function(aUrl, aCallback) {
+            var anHttpRequest = new XMLHttpRequest();
+            anHttpRequest.onreadystatechange = function() { 
+                if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200)
+                    aCallback(anHttpRequest.responseText);
+            }
+
+            anHttpRequest.open( "GET", aUrl, true );            
+            anHttpRequest.send( null );
+        }
+    }
+    
+    function init() {
+
+
+      initWebSocket()
+
+    }
+
+    function initWebSocket() {
+      var client = new HttpClient();
+      client.get('/leader', function(response) {
+          
+          leader_json = JSON.parse(response)
+          console.log(leader_json.leader)
+          ws = new WebSocket("ws://"+leader_json.leader+":10013/");
+
+          ws.onopen = function() {
+            console.log("onopen")
+            isConnected = true;
+          };
+          
+          ws.onmessage = function(e) {
+            message = e.data.split(":")
+            if (message[0] == "CO") {
+              output(message[1], message[2]);
+              counter++;
+            } else if (message[0] == "CL") {
+              console.log("close connection")
+              ws.close()
+              counter = 0
+            } else if (message[0] == "CR") {
+              comment(message[1], message[2]);
+            }
+          };
+          
+          ws.onclose = function() {
+            if (isConnected) {
+              isConnected = false
+              console.log("no host. search for new host...");
+            }
+            console.log("onclose");
+            setTimeout(initWebSocket, 1000)
+          };
+
+          ws.onerror = function(e) {
+            console.log(e)
+          };
+      });
+    }
+    
+    function onSubmit() {
+      var input = document.getElementById("input");
+      ws.send(input.value);
+      output("send: " + input.value);
+      console.log("send: " + input.value);
+      input.value = "";
+      input.focus();
+    }
+    
+    function output(id, str) {
+      var node = document.createElement('div')
+      node.innerHTML = "<div class='row mt-3'><div class='card card-body' id='text-"+ id +"'><p>" + str + '</p>'
+        + '<div class="form-row mb-3">'
+          + '<div class="col-sm-10">'
+            + '<input class="form-control" type="text" placeholder="comment" id="input-'+ id +'">'
+          + '</div>'
+          + '<div class="col-sm-2">'
+            + '<button type="submit" class="btn btn-primary btn-block" id="'+ id +'" onClick="proceed(this.id)">Send</button>'
+          + '</div>'
+          + '</div>'
+        + '</div>'
+        + "</div>"
+      // document.getElementById("log").appendChild(node.firstChild);
+      document.getElementById("log").insertBefore(node.firstChild, document.getElementById("log").childNodes[0]);
+    }
+
+    function comment(id, str) {
+      var text = document.getElementById("text-" + id);
+      var node = document.createElement('p')
+      node.innerHTML = "<p>&nbsp;&nbsp;&nbsp;&nbsp;>> " + str + "</p>"
+      text.appendChild(node.firstChild);
+    }
+
+    function send_quote() {
+      var input = document.getElementById("new_quote" );
+      if (input.value.length == 0) {
+        return;
+      }
+      var message = "CO:"+input.value
+      ws.send(message);
+      console.log("send: " + message);
+      input.value = "";
+      input.focus();
+    }
+
+    function proceed(id) {
+      var input = document.getElementById("input-" + id);
+      var message = "CR:"+id+":"+input.value // CR = Client Reply
+      ws.send(message);
+      console.log("send: " + message);
+      input.value = "";
+      input.focus();
+    }
+
+  </script>
+</head>
+<body onload="init();">
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="#">
+      <img src="/logo_localshit.png" height="30" alt=""> Local's Hit
+    </a>
+  </nav>
+  <main class="flex-shrink-0">
+    <div class="container">
+      <div class="row mt-3">
+        <div class="col-sm-10">
+          <input class="form-control" type="text" placeholder="send new quote" id="new_quote">
+        </div>
+        <div class="col-sm-2">
+          <button type="submit" class="btn btn-primary btn-block" id="new_quote_btn" onClick="send_quote()">Send</button>
+        </div>
+      </div>
+      <div id="log"></div>
+    </div>
+
+  </main>
+
+
+  <!-- JS, Popper.js, and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+</body>
+</html>
