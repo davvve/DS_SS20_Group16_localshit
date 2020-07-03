@@ -38,6 +38,9 @@ Run tests:
 pytest tests -s
 ```
 
+# Demo Video
+[![Demo-Video](http://img.youtube.com/vi/tH11u04u4Ts/0.jpg)](http://www.youtube.com/watch?v=tH11u04u4Ts "Demo-Video")
+
 ## Config
 All configuration parameters are stored in `utils/config.py`:
 ```
