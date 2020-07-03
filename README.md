@@ -1,5 +1,7 @@
 # Local's Hit
 
+![Logo_LocalsHit](logo_localshit.png)
+
 Project of Lecture DBE14 Distributed Systems
 
 ## Team Members
@@ -47,12 +49,19 @@ config = {
     "content_websocket_port": 10013,
     "frontend_unicast_port": 10012,
     "frontend_webserver_port": 8081,
+    "reliable_socket": 10033,
+    "loglevel": "debug",
+    "chuck_norris": True,
+    "quote_intervall": 25,
+    "announcement_timeout": 1,
+    "heartbeat_intervall": 2,
+    "heartbeat_timeout": 6,
 }
 ```
 
 # Docker
 
-You can use docker to run multiple servers on one host. If you use multiple servers distributed on more than one host, use Vagrant because DOcker doesn't support bridged networks to the local area network.
+You can use docker to run multiple servers on one host. If you use multiple servers distributed on more than one host, use Vagrant because Docker doesn't support bridged networks to the local area network.
 
 ## Build and run backend
 
