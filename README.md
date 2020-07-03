@@ -1,5 +1,7 @@
 # Local's Hit
 
+![Logo_LocalsHit](logo_localshit.png)
+
 Project of Lecture DBE14 Distributed Systems
 
 ## Team Members
