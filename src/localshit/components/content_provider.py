@@ -93,7 +93,8 @@ class ContentProvider(StoppableThread):
         parts = message.split(":")
         if parts[0] == "CR":
             new_message = "%s:%s:%s" % (parts[0], parts[1], parts[2])
-            self.server.send_message_to_all(new_message)
+            self._replicate_and_send(new_message)
+            # self.server.send_message_to_all(new_message)
         elif parts[0] == "CO":
             quote_id = uuid.uuid4()
             data = "%s:%s:%s" % ("CO", quote_id, parts[1])

@@ -92,6 +92,8 @@ class ReliableSocketWorker:
             if host in self.hosts.members:
                 new_timestamp[host] = self.my_timestamp[host]
         self.my_timestamp = new_timestamp
+        
+        logging.debug("Vector Clock: %s" % self.my_timestamp)
 
         # check if ack message type
         if is_ack:
